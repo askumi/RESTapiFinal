@@ -3,27 +3,27 @@ var router = express.Router();
 var Game = require('../models/game');
 
 //GET - Reading this Resource
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res, next){
 	Game.find(function(err, games){
 		if(err){
-			console.log(err);
-			res.render('error', {message: 'GET Error', error: err});
-		} else {
-			res.render('games', {games: games});
+			res.send(404);
+		} else{
+			res.json(games);
 		}
 	});
 });
 router.get('/:_id', function(req, res, next){
 	var _id = req.params._id;
+	
 	Game.findById(_id, function(err, game){
 		if(err){
-			console.log(err);
-			res.render('error', {message: 'GET ID Error', error: err});
+			res.send(404);
 		} else {
-			res.render('game', {game: game});
+			res.json(game);
 		}
 	});
 });
+
 //POST - Creating this Resource
 router.post('/', function(req, res, next){
 	Game.create({
@@ -31,12 +31,11 @@ router.post('/', function(req, res, next){
 		publisher: req.body.publisher,
 		genre: req.body.genre,
 		year: req.body.year
-	}, function(err, games){
+	}, function(err, game){
 		if(err){
-			console.log(err)
-			res.render('error', {message: 'Post Error', error: err});
-		} else {
-			res.send('Successfully Added New Game');
+			res.send(400);
+		} else{
+			res.send(201);
 		}
 	});
 });
@@ -44,7 +43,7 @@ router.post('/', function(req, res, next){
 router.put('/:_id', function(req, res, next){
 	var _id = req.params._id;
 	
-	var games = new Game({
+	var game = new Game({
 		_id: _id,
 		title: req.body.title,
 		publisher: req.body.publisher,
@@ -52,12 +51,11 @@ router.put('/:_id', function(req, res, next){
 		year: req.body.year
 	});
 	
-	Game.update({_id: _id}, games, function(err){
+	Game.update({_id: _id}, game, function(err){
 		if(err){
-			console.log(err);
-			res.render('error', {message: 'PUT Error', error: err});
-		} else {
-			res.send('Successfully Updated');
+			res.send(err.message);
+		} else{
+			res.send(200);
 		}
 	});
 });
@@ -67,11 +65,18 @@ router.delete('/:_id', function(req, res, next){
 	
 	Game.remove({_id: _id}, function(err){
 		if(err){
-			console.log(err);
-			res.render('error', {message: 'DELETE Error', error: err});
-		} else {
-			res.send('Successfully Deleted');
+			res.send(404);
+		} else{
+			res.send(200);
 		}
 	});
 });
+
 module.exports = router;
+
+
+
+
+
+
+
